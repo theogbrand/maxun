@@ -29,6 +29,18 @@ services:
     volumes:
       - minio_data:/data
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379" # Expose Redis port if needed externally, otherwise remove
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     #build:
       #context: .
@@ -52,6 +64,7 @@ services:
     depends_on:
       - postgres
       - minio
+      - redis
     volumes:
       - /var/run/dbus:/var/run/dbus
 
@@ -72,3 +85,4 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  redis_data:
